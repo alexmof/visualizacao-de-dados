@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="pt-BR" style="height: 100%">
+<head>
+  <meta charset="utf-8">
+</head>
+<body style="height: 100%; margin: 0">
+  <div id="container" style="height: 100%"></div>
+
+  <script src="https://fastly.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
+
+  <script>
+    const dom = document.getElementById('container');
+    const chart = echarts.init(dom);
+
+    const dadosChuva = [
+      { ano: "2015", valor: 386.7 },
+      { ano: "2016", valor: 295.0 },
+      { ano: "2017", valor: 211.5 },
+      { ano: "2018", valor: 764.8 },
+      { ano: "2019", valor: 497.9 },
+      { ano: "2020", valor: 591.3 },
+      { ano: "2021", valor: 388.5 },
+      { ano: "2022", valor: 938.6 },
+      { ano: "2023", valor: 465.6 },
+      { ano: "2024", valor: 378.2 }
+    ];
+
+    // Calcular variação ano a ano
+    const variacao = dadosChuva.map((d, i) => {
+      if (i === 0) return { ano: d.ano, diff: 0 };
+      return { ano: d.ano, diff: +(d.valor - dadosChuva[i - 1].valor).toFixed(1) };
+    });
+
+    const option = {
+      title: {
+        text: "Variação da chuva acumulada por ano (2015–2024)\nFazenda Carnaúba - Taperoá - PB",
+        left: "center"
+      },
+      tooltip: {
+        trigger: "axis",
+        formatter: (params) => {
+          const p = params[0];
+          return `${p.name}<br/>Variação: ${p.value} mm`;
+        }
+      },
+      grid: { left: "8%", right: "8%", bottom: "15%" },
+      xAxis: {
+        type: "category",
+        data: variacao.map(v => v.ano)
+      },
+      yAxis: {
+        type: "value",
+        name: "mm"
+      },
+      visualMap: {
+        show: true,
+        top: 60,
+        left: "right",
+        pieces: [
+          { gt: 0, color: "#2196F3", label: "Aumento" },   // azul
+          { lt: 0, color: "#FF9800", label: "Redução" },  // laranja
+          { value: 0, color: "#673AB7", label: "Ano base" } // roxo
+        ]
+      },
+      series: [
+        {
+          name: "Variação",
+          type: "bar",
+          data: variacao.map(v => v.diff),
+          label: {
+            show: true,
+            position: "top",
+            formatter: (p) => p.value > 0 ? `+${p.value}` : p.value
+          },
+          itemStyle: {
+            color: (p) => {
+              if (p.value > 0) return "#2196F3";
+              if (p.value < 0) return "#FF9800";
+              return "#673AB7";
+            },
+            borderRadius: [4, 4, 0, 0]
+          }
+        }
+      ],
+      toolbox: {
+        right: 20,
+        feature: {
+          saveAsImage: {},
+          restore: {}
+        }
+      },
+      dataZoom: [{ type: "inside" }, { type: "slider" }]
+    };
+
+    chart.setOption(option);
+    window.addEventListener("resize", chart.resize);
+  </script>
+</body>
+</html>

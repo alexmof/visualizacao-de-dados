@@ -45,7 +45,7 @@
     option = {
   color: ['#80FFA5', '#00DDFF', '#37A2FF', '#FF0087', '#FFBF00'],
   title: {
-    text: 'Gradient Stacked Area Chart'
+    text: 'Volume de chuva total na Fazenda Carnaúba por ano'
   },
   tooltip: {
     trigger: 'axis',
@@ -56,9 +56,6 @@
       }
     }
   },
-  legend: {
-    data: ['Line 1', 'Line 2', 'Line 3', 'Line 4', 'Line 5']
-  },
   toolbox: {
     feature: {
       saveAsImage: {}
@@ -68,7 +65,7 @@
     {
       type: 'category',
       boundaryGap: false,
-      data: [ '2013', '2014', '2015', '2016', '2017', '2018', '2019', '2020', '2021', '2022', '2023', '2024', '2025', ]
+      data: [ '2015', '2016', '2017', '2018', '2019', '2020', '2021', '2022', '2023', '2024', '2025', ]
     }
   ],
   yAxis: [
@@ -76,7 +73,13 @@
       type: 'log'
     }
   ],
-  series: [{
+  dataZoom: [
+    {
+      type: 'inside'
+    }
+  ],
+  series: [
+  /*{
       name: 'Line 2',
       type: 'line',
       stack: 'Total',
@@ -101,7 +104,7 @@
       emphasis: {
         focus: 'series'
       },      
-      data: [14, 18,16,17,11,28,25,19,19,37,18,21,27]
+      data: [16,17,11,28,25,19,19,37,18,21,27]
     },
     {
       name: 'Line 3',
@@ -128,10 +131,10 @@
       emphasis: {
         focus: 'series'
       },
-      data:[9,15,9,10,5,21,16,11,11,24,16,14,17]
-    },
+      data:[9,10,5,21,16,11,11,24,16,14,17]
+    },*/
     {
-      name: 'Line 1',
+      name: 'Total de chuvas em mm',
       type: 'line',
       stack: 'Total',
       smooth: true,

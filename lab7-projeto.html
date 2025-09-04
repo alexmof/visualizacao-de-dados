@@ -1,0 +1,415 @@
+<!--
+	THIS EXAMPLE WAS DOWNLOADED FROM https://echarts.apache.org/examples/en/editor.html?c=map-usa-projection
+-->
+<!DOCTYPE html>
+<html lang="en" style="height: 100%">
+
+<head>
+  <meta charset="utf-8">
+</head>
+
+<body style="height: 100%; margin: 0">
+  <select name="" id="sel">
+    <option value="EXP" selected>Exportações</option>
+    <option value="IMP">Importções</option>
+    <option value="BAL">Balança</option>
+  </select>
+  <div id="container" style="height: 500px"></div>
+  <div id="container2" style="height: 200px"></div>
+
+  <script type="text/javascript"
+    src="https://echarts.apache.org/en/js/vendors/jquery@3.7.1/dist/jquery.min.js"></script>
+  <script type="text/javascript" src="https://fastly.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
+
+  <!-- Uncomment this line if you want to dataTool extension
+  <script type="text/javascript" src="https://fastly.jsdelivr.net/npm/echarts@5/dist/extension/dataTool.min.js"></script>
+  -->
+  <!-- Uncomment this line if you want to use gl extension
+  <script type="text/javascript" src="https://echarts.apache.org/en/js/vendors/echarts-gl/dist/echarts-gl.min.js"></script>
+  -->
+  <!-- Uncomment this line if you want to echarts-stat extension
+  <script type="text/javascript" src="https://echarts.apache.org/en/js/vendors/echarts-stat/dist/ecStat.min.js"></script>
+  -->
+  <!-- Uncomment this line if you want to echarts-graph-modularity extension
+  <script type="text/javascript" src="https://echarts.apache.org/en/js/vendors/echarts-graph-modularity/dist/echarts-graph-modularity.min.js"></script>
+  -->
+  <!-- Uncomment this line if you want to use map
+  <script type="text/javascript" src="https://fastly.jsdelivr.net/npm/echarts@4.9.0/map/js/world.js"></script>
+  -->
+  <!-- Uncomment these two lines if you want to use bmap extension
+  <script type="text/javascript" src="https://api.map.baidu.com/api?v=3.0&ak=YOUR_API_KEY"></script>
+  <script type="text/javascript" src="https://fastly.jsdelivr.net/npm/echarts@5/dist/extension/bmap.min.js"></script>
+  -->
+
+  <script type="text/javascript">
+    // Inicia a instância do ECharts (supondo que 'myChart' já esteja inicializado)
+    // var myChart = echarts.init(document.getElementById('main'));
+    var dom = document.getElementById('container');
+    var myChart = echarts.init(dom, null, {
+      renderer: 'canvas',
+      useDirtyRect: false
+    });
+    var app = {};
+    var ROOT_PATH = 'https://echarts.apache.org/examples';
+    var option;
+    var selType = "EXP";
+    var dataB; // Vai armazenar os dados do seu JSON
+    var option;
+    const anoSelecionado = '1997';
+
+    function updateChart(tipoDado, ano) {
+      if (!myChart || !dataB) {
+        console.error("Gráfico ou dados não inicializados.");
+        return;
+      }
+
+      // Define o título do gráfico com base na seleção
+      const titulos = {
+        EXP: 'Exportações Brasileiras',
+        IMP: 'Importações Brasileiras',
+        BAL: 'Balança Comercial por País'
+      };
+
+      // 1. Transforma os dados do seu JSON para o formato que o ECharts entende
+      const dadosParaMapa = dataB[tipoDado][ano].map(pais => {
+        return {
+          name: pais.name,
+          value: pais.us_value // Usando sempre a métrica 'us_value'
+        };
+      });
+
+      // 2. Calcula min/max para a legenda se ajustar aos novos dados
+      const valores = dadosParaMapa.map(item => item.value).filter(v => v !== undefined && v !== null);
+      const valorMin = Math.min(...valores);
+      const valorMax = Math.max(...valores);
+
+      var colors = ['#a52415', '#ece6d0', '#12391c'];
+
+      if (tipoDado == 'EXP') {
+        colors = ['#e1f5e8', '#173d22'];
+      } else if (tipoDado == 'IMP') {
+        colors = ['#faeae2', '#a22b1c'];
+      }
+
+      // 3. Atualiza o gráfico com as novas opções (série, título e legenda)
+      myChart.setOption({
+        title: {
+          text: `Volume de Exportações do Brasil (Ano ${ano})`,
+          subtext: `Dados do Monitor do Comércio Exterior Brasileiro`,
+          left: 'center',
+          top: 'top'
+        },
+        visualMap: {
+          min: valorMin,
+          max: valorMax,
+          inRange: {
+            // Cores para valores negativos (vermelho), próximos de zero (amarelo) e positivos (azul)
+            color: colors
+          }
+        },
+        series: [
+          {
+            name: titulos[tipoDado],
+            // A única coisa que muda na série é o array de dados
+            data: dadosParaMapa
+          }
+        ]
+      });
+    }
+    function formatarNumeroAbreviado(numero) {
+      // Define os valores para cada ordem de grandeza
+      const MIL = 1e3;
+      const MILHAO = 1e6;
+      const BILHAO = 1e9;
+      const TRILHAO = 1e12;
+
+      // Garante que estamos trabalhando com um número
+      const numAbs = Math.abs(numero);
+      let valorFinal;
+      let sufixo;
+
+      if (numAbs >= TRILHAO) {
+        valorFinal = numero / TRILHAO;
+        sufixo = 'tri';
+      } else if (numAbs >= BILHAO) {
+        valorFinal = numero / BILHAO;
+        sufixo = 'bi';
+      } else if (numAbs >= MILHAO) {
+        valorFinal = numero / MILHAO;
+        sufixo = 'mi';
+      } else if (numAbs >= MIL) {
+        valorFinal = numero / MIL;
+        sufixo = 'mil';
+      } else {
+        // Para números menores que mil, retorna o número com formatação local
+        return numero.toLocaleString('pt-BR');
+      }
+
+      // Arredonda para uma casa decimal e substitui o ponto por vírgula
+      const valorFormatado = valorFinal.toFixed(1).replace('.', ',');
+
+      return `${valorFormatado} ${sufixo}`;
+    }
+
+    myChart.showLoading();
+
+    // Combina as duas lógicas: primeiro busca os dados do mapa, depois busca os seus dados de negócio.
+    $.when(
+      // 1. Carrega o arquivo GeoJSON do mapa-múndi
+      $.get('https://cdn.jsdelivr.net/gh/apache/echarts-website@asf-site/examples/data/asset/geo/world.json'),
+
+      // 2. Carrega o seu arquivo JSON de dados
+      fetch('/BR-exportacoes_importacoes_2025.json').then(response => {
+        if (!response.ok) {
+          throw new Error('Erro ao carregar dados de negócio: ' + response.statusText);
+        }
+        return response.json();
+      })
+
+    ).done(function (mapResult, businessData) {
+      // mapResult[0] contém o worldJson
+      // businessData contém o resultado do seu fetch (o objeto dataB)
+      const worldJson = mapResult[0];
+      dataB = businessData;
+      criarGraficoDeLinhaSomaImportacoes(dataB);
+
+      myChart.hideLoading();
+
+      // Registra o mapa-múndi no ECharts
+      echarts.registerMap('world', worldJson);
+
+      // --- PASSO DE TRANSFORMAÇÃO DOS DADOS ---
+      // Escolha o ano e a métrica que deseja exibir no mapa
+      const anoSelecionado = '2025';
+      const metrica = 'us_value'; // Você pode trocar para 'kg_weight'
+
+      // Transforma os dados do seu JSON para o formato que o ECharts entende
+      var dadosParaMapa = dataB[selType][anoSelecionado].map(pais => {
+        return {
+          name: pais.name, // Nome do país
+          value: pais[metrica] // Valor associado (US$ ou KG)
+        };
+      });
+      // -----------------------------------------
+
+      // Encontrar os valores mínimo e máximo para ajustar a legenda (visualMap)
+      const valores = dadosParaMapa.map(item => item.value);
+      const valorMin = Math.min(...valores);
+      const valorMax = Math.max(...valores);
+
+      option = {
+        title: {
+          text: `Volume de Exportações do Brasil (Ano ${anoSelecionado})`,
+          subtext: `Dados do Monitor do Comércio Exterior Brasileiro`,
+          left: 'center',
+          top: 'top'
+        },
+        tooltip: {
+          trigger: 'item',
+          // Formata o tooltip para exibir o valor em formato de moeda ou peso
+          formatter: function (params) {
+            // Se não houver dados para o país, exibe apenas o nome
+            if (!params.value) {
+              return `${params.name}`;
+            }
+            let value = formatarNumeroAbreviado(params.value);
+            // Formata o número para melhor leitura
+            return `${params.name}<br/><strong>US$</strong>: ${value}`;
+          }
+        },
+        visualMap: {
+          left: 'right',
+          top: 'top',
+          // Ajusta dinamicamente o min e max da legenda
+          min: valorMin,
+          max: valorMax,
+          inRange: {
+            // Cores para valores negativos (vermelho), próximos de zero (amarelo) e positivos (azul)
+            color: ['#e1f5e8', '#173d22']
+          },
+          text: ['Alto', 'Baixo'],
+          calculable: true
+        },
+        series: [
+          {
+            name: `Balança Comercial (${metrica})`,
+            type: 'map',
+            map: 'world',
+            roam: true, // Permite zoom e arrastar o mapa
+            emphasis: {
+              label: {
+                show: true
+              }
+            },
+            // USA OS DADOS TRANSFORMADOS AQUI
+            data: dadosParaMapa
+          }
+        ]
+      };
+
+      myChart.setOption(option);
+      const tipoDadoSelect = document.getElementById('sel');
+
+      // 1. CHAMA a função updateChart pela primeira vez para exibir o estado inicial ('IMP')
+
+      // 2. ADICIONA o "ouvinte" de eventos. Ele chamará updateChart sempre que o valor mudar.
+      tipoDadoSelect.addEventListener('change', function () {
+        const novoTipoSelecionado = this.value;
+        selType = novoTipoSelecionado;
+        updateChart(novoTipoSelecionado, 2025);
+      });
+
+    }).fail(function (error) {
+      // Se qualquer uma das requisições falhar
+      myChart.hideLoading();
+      console.error('Falha ao carregar os recursos necessários:', error);
+      // Opcional: exibir uma mensagem de erro no próprio gráfico
+      myChart.showLoading({
+        text: 'Erro ao carregar dados. Verifique o console.',
+        showSpinner: false,
+        textColor: '#c23531'
+      });
+    });
+
+  </script>
+  <script type="text/javascript">
+
+    function criarGraficoDeLinhaSomaImportacoes(dataB) {
+      // 1. Acessar os dados de importação
+      const dadosImportacao = dataB.IMP;
+      const dadosExpotacao = dataB.EXP;
+      const dadosBalanca = dataB.BAL;
+
+      // 2. Extrair e ordenar os anos para o eixo X
+      const anos = Object.keys(dadosImportacao).sort();
+
+      // 3. Calcular a soma total de 'us_value' para cada ano
+      const somasAnuaisImportacao = anos.map(ano => {
+        const entradasDoAno = dadosImportacao[ano];
+        // Usa a função reduce para somar os valores de todos os países no ano
+        const somaTotal = entradasDoAno.reduce((acumulador, pais) => {
+          // Adiciona o valor do país ao acumulador
+          return acumulador + pais.us_value;
+        }, 0); // O '0' é o valor inicial do acumulador
+        return somaTotal;
+      });
+      const somasAnuaisExp = anos.map(ano => {
+        const entradasDoAno = dadosExpotacao[ano];
+        // Usa a função reduce para somar os valores de todos os países no ano
+        const somaTotal = entradasDoAno.reduce((acumulador, pais) => {
+          // Adiciona o valor do país ao acumulador
+          return acumulador + pais.us_value;
+        }, 0); // O '0' é o valor inicial do acumulador
+        return somaTotal;
+      });
+      const somasAnuaisBal = anos.map(ano => {
+        const entradasDoAno = dadosBalanca[ano];
+        // Usa a função reduce para somar os valores de todos os países no ano
+        const somaTotal = entradasDoAno.reduce((acumulador, pais) => {
+          // Adiciona o valor do país ao acumulador
+          return acumulador + pais.us_value;
+        }, 0); // O '0' é o valor inicial do acumulador
+        return somaTotal;
+      });
+
+      // --- Agora, montamos a configuração do ECharts com os dados processados ---
+      var dom = document.getElementById('container2');
+      var myChart2 = echarts.init(dom, null, {
+        renderer: 'canvas',
+        useDirtyRect: false
+      });
+
+      var option2 = {
+        title: {
+          text: 'Total por ano',
+          left: 'left'
+        },
+        tooltip: {
+          trigger: 'axis',
+          formatter: function (params) {
+            const ano = params[0].name;
+            // changeToSelectedYear(ano);
+            updateChart(selType, ano);
+          }
+        },
+        legend: {
+          data: ['Exportação', 'Importação', 'Balanço Comercial'],
+        },
+        grid: {
+          left: '3%',
+          right: '4%',
+          bottom: '15%', // Aumenta o espaço para o dataZoom
+          containLabel: true
+        },
+        toolbox: {
+          feature: {
+            saveAsImage: {}
+          }
+        },
+        dataZoom: [
+          {
+            show: true,
+            realtime: true,
+            start: 0,
+            end: 100
+          },
+          {
+            type: 'inside',
+            realtime: true,
+            start: 0,
+            end: 100
+          }
+        ],
+        xAxis: {
+          type: 'category',
+          boundaryGap: false,
+          // 4. Usa a lista de anos no eixo X
+          data: anos,
+        },
+        yAxis: {
+          type: 'value',
+          axisLabel: {
+            formatter: function (value) {
+              // Formata o eixo Y para exibir valores de forma mais curta (ex: 1B para 1 bilhão)
+              if (value >= 1e9 || value < 1e9) return (value / 1e9) + 'B';
+              if (value >= 1e6) return (value / 1e6) + 'M';
+              if (value >= 1e3) return (value / 1e3) + 'k';
+              return value;
+            }
+          },
+        },
+        color: ["#2a4434", "#ebbeb4", "#bbd4ec"],
+        series: [
+          // '5. Usa a lista com as somas anuais como dados da série
+
+          {
+            name: "Exportação",
+            type: "line",
+            data: somasAnuaisExp,
+            smooth: true
+          },
+          {
+            name: "Importação",
+            type: "line",
+            data: somasAnuaisImportacao,
+            smooth: true
+          },
+          {
+            name: "Balanço Comercial",
+            type: "line",
+            data: somasAnuaisBal,
+            smooth: true
+          },
+        ]
+      };
+
+      if (option2 && typeof option2 === 'object') {
+        myChart2.setOption(option2);
+      }
+
+      window.addEventListener('resize', myChart2.resize);
+    }
+  </script>
+</body>
+
+</html>

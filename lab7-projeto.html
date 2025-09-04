@@ -159,7 +159,7 @@
       $.get('https://cdn.jsdelivr.net/gh/apache/echarts-website@asf-site/examples/data/asset/geo/world.json'),
 
       // 2. Carrega o seu arquivo JSON de dados
-      fetch('/BR-exportacoes_importacoes_2025.json').then(response => {
+      fetch('https://alexmof.github.io/visualizacao-de-dados/BR-exportacoes_importacoes_2025.json').then(response => {
         if (!response.ok) {
           throw new Error('Erro ao carregar dados de negócio: ' + response.statusText);
         }

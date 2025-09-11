@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lab8 - Grupo [LETRA]</title>
+
+  <style>
+    body {
+      font-family: 'Roboto', sans-serif;
+      background-color: #f4f6f9;
+      color: #333;
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    .dashboard-header {
+      background-color: #2c3e50;
+      color: white;
+      padding: 30px;
+      text-align: left;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .dashboard-title {
+      margin: 0;
+      font-size: 36px;
+      font-weight: 700;
+    }
+
+    .lead {
+      font-size: 20px;
+      color: #ecf0f1;
+      margin-top: 10px;
+    }
+
+    #chart-header {
+      display: flex;
+      align-items: left;
+      justify-content: space-between;
+      width: 100%;
+      max-width: 800px;
+    }
+
+    #chart-container {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 40px;
+    }
+
+    #chart {
+      width: 100%;
+      max-width: 800px;
+      height: 500px;
+      border-radius: 12px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      margin-top: 30px;
+    }
+
+    #back-button {
+      display: none;
+      margin-top: 20px;
+      padding: 12px;
+      font-size: 16px;
+      background-color: #3498db;
+      color: white;
+      border: none;
+      cursor: pointer;
+      border-radius: 8px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      transition: background-color 0.3s ease;
+    }
+
+    #back-button:hover {
+      background-color: #2980b9;
+    }
+
+    .card {
+      margin: 40px auto;
+      border: none;
+      overflow: hidden;
+      background-color: white;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .card-header {
+      background-color: #34495e;
+      color: white;
+      padding: 20px;
+      font-size: 18px;
+      font-weight: 600;
+    }
+
+    .card-body {
+      padding: 30px;
+      font-size: 16px;
+      color: #7f8c8d;
+      line-height: 1.6;
+    }
+
+    .header-info {
+      padding: 20px 50px;
+      background-color: #a4dceb;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="header-info">
+    <table style="width: 100%; border: 0">
+      <tbody>
+        <tr>
+          <td style="text-align: left; vertical-align: top">
+            <table style="border: 0">
+              <tbody>
+                <tr>
+                  <td style="width: 70px">
+                    <img src="https://maxmcz.github.io/visualizacao-de-dados_exemplo/UFCG_logo_png.png"
+                      alt="Brasão UFCG" style="margin-top: 5px; height: 62px">
+                  </td>
+                  <td>
+                    <div style="line-height: 1.4">
+                      <div>
+                        <strong>UNIVERSIDADE FEDERAL DE CAMPINA GRANDE - UFCG</strong>
+                      </div>
+                      <div>
+                        CENTRO DE ENGENHARIA ELÉTRICA E INFORMÁTICA - CEEI
+                      </div>
+                      <div>UNIDADE ACADÊMICA DE SISTEMAS E COMPUTAÇÃO - UASC</div>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </td>
+
+          <td style="text-align: right; vertical-align: top">
+            <div>Disciplina: Visualização de Dados</div>
+            <div>Professor: Maxwell Guimarães de Oliveira</div>
+            <div>Período: 20XX.X</div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div id="header">
+    <h2 style="text-align: center">
+      Projeto de Visualização Interativa de Dados
+    </h2>
+    <h4 style="text-align: center">
+      <u>Grupo X</u>: Primeiro_Nome_1 Último_Nome_1, Primeiro_Nome_2 Último_Nome_2, Primeiro_Nome_3 Último_Nome_3, …
+      &nbsp; &nbsp;
+    </h4>
+    <h2 style="text-align: center">
+      <span><strong>Título da visualização</strong></span>
+    </h2>
+    <p style="text-align: justify; padding: 10px 50px 10px 50px">
+      Breve resumo sobre os dados (e as histórias) visualizadas.
+    </p>
+  </div>
+
+  <select id="dataType" name="dataType">
+    <option value="POPESTIMATE" selected>População total estimada</option>
+    <option value="DEATHS">Mortes</option>
+    <option value="BIRTHS">Nascimentos</option>
+    <option value="NPOPCH">Mudança populacional</option>
+    <option value="NATURALCH">Mudança natural</option>
+    <option value="INTERNATIONALMIG">Migração internacional</option>
+    <option value="DOMESTICMIG">Migração doméstica</option>
+    <option value="NETMIG">Migração</option>
+    <option value="RESIDUAL">Residual</option>
+  </select>
+
+  <select name="year" id="year">
+    <option value="2020">2020</option>
+    <option value="2021">2021</option>
+    <option value="2022">2022</option>
+    <option value="2023">2023</option>
+    <option value="2024" selected>2024</option>
+  </select>
+
+  <div id="container" style="max-width: 100%; height: 470px; padding: 10px 50px 10px 50px">
+  </div>
+
+  <div id="footer" style="height: 2%; margin-top: 150px">
+    <p style="text-align: justify; padding: 20px 50px 0px 50px">
+      <b>Dicas para interagir com a visualização</b>:
+    </p>
+    <ul style="padding: 0px 50px 10px 75px;">
+      <li>Inserir aqui breves instruções para o usuário navegar na visualização e usar o máximo dos recursos de
+        interação disponíveis.</li>
+      <li>...</li>
+      <li>...</li>
+    </ul>
+  </div>
+
+  <script type="text/javascript" src="https://fastly.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
+  <script type="text/javascript" src="https://fastly.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
+
+  <!-- Uncomment this line if you want to dataTool extension
+  <script type="text/javascript" src="https://fastly.jsdelivr.net/npm/echarts@5.5.0/dist/extension/dataTool.min.js"></script>
+  -->
+  <!-- Uncomment this line if you want to use gl extension
+  <script type="text/javascript" src="https://fastly.jsdelivr.net/npm/echarts-gl@2/dist/echarts-gl.min.js"></script>
+  -->
+  <!-- Uncomment this line if you want to echarts-stat extension
+  <script type="text/javascript" src="https://fastly.jsdelivr.net/npm/echarts-stat@latest/dist/ecStat.min.js"></script>
+  -->
+  <!-- Uncomment this line if you want to use map
+  <script type="text/javascript" src="https://fastly.jsdelivr.net/npm/echarts@4.9.0/map/js/china.js"></script>
+  <script type="text/javascript" src="https://fastly.jsdelivr.net/npm/echarts@4.9.0/map/js/world.js"></script>
+  -->
+  <!-- Uncomment these two lines if you want to use bmap extension
+  <script type="text/javascript" src="https://api.map.baidu.com/api?v=3.0&ak=YOUR_API_KEY"></script>
+  <script type="text/javascript" src="https://fastly.jsdelivr.net/npm/echarts@5.5.0/dist/extension/bmap.min.js"></script>
+  -->
+
+  <script type="text/javascript">
+
+    var data;
+    const $dataTypeSelect = document.getElementById('dataType');
+    const $yearSelect = document.getElementById('year');
+    var dataType = $dataTypeSelect.value;
+    var year = $yearSelect.value;
+
+    $dataTypeSelect.addEventListener('change', function () {
+      const newTypeSelected = this.value;
+      selType = newTypeSelected;
+      updateChart(newTypeSelected, year, data);
+    });
+    $yearSelect.addEventListener('change', function () {
+      const newYearSelected = this.value;
+      selType = newYearSelected;
+      updateChart(dataType, newYearSelected, data);
+    });
+
+    const fetchData = async () => {
+      try {
+        const response = await fetch('./df_estado.json');
+
+        if (!response.ok) {
+          throw new Error('Erro ao carregar dados: ' + response.statusText);
+        }
+
+        const data = await response.json();
+        return data;
+
+      } catch (error) {
+        console.error("Falha ao buscar os dados:", error);
+        return null;
+      }
+    };
+
+    (async () => {
+      data = await fetchData();
+
+      if (data) {
+        updateChart(dataType, year, data);
+      }
+    })();
+
+    function arredondarParaCima(num) {
+      const abs = Math.abs(num);
+      const potencia = Math.pow(10, Math.floor(Math.log10(abs)));
+      const arredondado = Math.ceil(abs / potencia) * potencia;
+      return Math.sign(num) * arredondado;
+    }
+
+    function arredondarParaBaixo(num) {
+      const abs = Math.abs(num);
+      const potencia = Math.pow(10, Math.floor(Math.log10(abs)));
+      const arredondado = Math.floor(abs / potencia) * potencia;
+      return Math.sign(num) * arredondado;
+    }
+
+    const updateChart = (dataType, year, data) => {
+
+      var dom = document.getElementById('container');
+      var myChart = echarts.init(dom, null, {
+        renderer: 'canvas',
+        useDirtyRect: false
+      });
+      var app = {};
+      var option;
+
+      const years = [2020, 2021, 2022, 2023, 2024];
+
+      const typesData = {
+        "DEATHS": "Mortes",
+        "BIRTHS": "Nascimentos",
+        "POPESTIMATE": "População total estimada",
+        "NPOPCH": "Mudança populacional",
+        "NATURALCH": "Mudança natural",
+        "INTERNATIONALMIG": "Migração internacional",
+        "DOMESTICMIG": "Migração doméstica",
+        "NETMIG": "Migração",
+        "RESIDUAL": "Residual",
+      };
+
+      var selectedData = data[dataType + year];
+
+      var min = Infinity;
+      var max = -Infinity;
+
+      Object.keys(selectedData).forEach(element => {
+        if (selectedData[element] > max) {
+          max = selectedData[element];
+        } else if (selectedData[element] < min) {
+          min = selectedData[element];
+        }
+      });
+
+      max = arredondarParaCima(max);
+      min = arredondarParaBaixo(min);
+
+      myChart.showLoading();
+      $.get('USA.json', function (usaJson) {
+        myChart.hideLoading();
+        echarts.registerMap('USA', usaJson, {
+          Alaska: {
+            left: -131,
+            top: 25,
+            width: 15
+          },
+          Hawaii: {
+            left: -110,
+            top: 28,
+            width: 5
+          },
+          'Puerto Rico': {
+            left: -76,
+            top: 26,
+            width: 2
+          }
+        });
+        option = {
+          title: {
+            text: 'USA ' + typesData[dataType] + ' (' + year + ')',
+            subtext: 'Data from www.census.gov',
+            sublink: 'http://www.census.gov/popest/data/datasets.html',
+            left: 'right'
+          },
+          tooltip: {
+            trigger: 'item',
+            showDelay: 0,
+            transitionDuration: 0.2
+          },
+          visualMap: {
+            left: 'right',
+            min: min,
+            max: max,
+            inRange: {
+              color: [
+                '#313695',
+                '#4575b4',
+                '#74add1',
+                '#abd9e9',
+                '#e0f3f8',
+                '#ffffbf',
+                '#fee090',
+                '#fdae61',
+                '#f46d43',
+                '#d73027',
+                '#a50026'
+              ]
+            },
+            text: ['High', 'Low'],
+            calculable: true
+          },
+          toolbox: {
+            show: true,
+            //orient: 'vertical',
+            left: 'left',
+            top: 'top',
+            feature: {
+              dataView: { readOnly: false },
+              restore: {},
+              saveAsImage: {}
+            }
+          },
+          series: [
+            {
+              name: typesData[dataType],
+              type: 'map',
+              roam: true,
+              map: 'USA',
+              emphasis: {
+                label: {
+                  show: true
+                }
+              },
+              data: [
+                { name: 'Alabama', value: selectedData[data["STATE_INDEX"]['Alabama']] },
+                { name: 'Alaska', value: selectedData[data["STATE_INDEX"]['Alaska']] },
+                { name: 'Arizona', value: selectedData[data["STATE_INDEX"]['Arizona']] },
+                { name: 'Arkansas', value: selectedData[data["STATE_INDEX"]['Arkansas']] },
+                { name: 'California', value: selectedData[data["STATE_INDEX"]['California']] },
+                { name: 'Colorado', value: selectedData[data["STATE_INDEX"]['Colorado']] },
+                { name: 'Connecticut', value: selectedData[data["STATE_INDEX"]['Connecticut']] },
+                { name: 'Delaware', value: selectedData[data["STATE_INDEX"]['Delaware']] },
+                { name: 'District of Columbia', value: selectedData[data["STATE_INDEX"]['District of Columbia']] },
+                { name: 'Florida', value: selectedData[data["STATE_INDEX"]['Florida']] },
+                { name: 'Georgia', value: selectedData[data["STATE_INDEX"]['Georgia']] },
+                { name: 'Hawaii', value: selectedData[data["STATE_INDEX"]['Hawaii']] },
+                { name: 'Idaho', value: selectedData[data["STATE_INDEX"]['Idaho']] },
+                { name: 'Illinois', value: selectedData[data["STATE_INDEX"]['Illinois']] },
+                { name: 'Indiana', value: selectedData[data["STATE_INDEX"]['Indiana']] },
+                { name: 'Iowa', value: selectedData[data["STATE_INDEX"]['Iowa']] },
+                { name: 'Kansas', value: selectedData[data["STATE_INDEX"]['Kansas']] },
+                { name: 'Kentucky', value: selectedData[data["STATE_INDEX"]['Kentucky']] },
+                { name: 'Louisiana', value: selectedData[data["STATE_INDEX"]['Louisiana']] },
+                { name: 'Maine', value: selectedData[data["STATE_INDEX"]['Maine']] },
+                { name: 'Maryland', value: selectedData[data["STATE_INDEX"]['Maryland']] },
+                { name: 'Massachusetts', value: selectedData[data["STATE_INDEX"]['Massachusetts']] },
+                { name: 'Michigan', value: selectedData[data["STATE_INDEX"]['Michigan']] },
+                { name: 'Minnesota', value: selectedData[data["STATE_INDEX"]['Minnesota']] },
+                { name: 'Mississippi', value: selectedData[data["STATE_INDEX"]['Mississippi']] },
+                { name: 'Missouri', value: selectedData[data["STATE_INDEX"]['Missouri']] },
+                { name: 'Montana', value: selectedData[data["STATE_INDEX"]['Montana']] },
+                { name: 'Nebraska', value: selectedData[data["STATE_INDEX"]['Nebraska']] },
+                { name: 'Nevada', value: selectedData[data["STATE_INDEX"]['Nevada']] },
+                { name: 'New Hampshire', value: selectedData[data["STATE_INDEX"]['New Hampshire']] },
+                { name: 'New Jersey', value: selectedData[data["STATE_INDEX"]['New Jersey']] },
+                { name: 'New Mexico', value: selectedData[data["STATE_INDEX"]['New Mexico']] },
+                { name: 'New York', value: selectedData[data["STATE_INDEX"]['New York']] },
+                { name: 'North Carolina', value: selectedData[data["STATE_INDEX"]['North Carolina']] },
+                { name: 'North Dakota', value: selectedData[data["STATE_INDEX"]['North Dakota']] },
+                { name: 'Ohio', value: selectedData[data["STATE_INDEX"]['Ohio']] },
+                { name: 'Oklahoma', value: selectedData[data["STATE_INDEX"]['Oklahoma']] },
+                { name: 'Oregon', value: selectedData[data["STATE_INDEX"]['Oregon']] },
+                { name: 'Pennsylvania', value: selectedData[data["STATE_INDEX"]['Pennsylvania']] },
+                { name: 'Rhode Island', value: selectedData[data["STATE_INDEX"]['Rhode Island']] },
+                { name: 'South Carolina', value: selectedData[data["STATE_INDEX"]['South Carolina']] },
+                { name: 'South Dakota', value: selectedData[data["STATE_INDEX"]['South Dakota']] },
+                { name: 'Tennessee', value: selectedData[data["STATE_INDEX"]['Tennessee']] },
+                { name: 'Texas', value: selectedData[data["STATE_INDEX"]['Texas']] },
+                { name: 'Utah', value: selectedData[data["STATE_INDEX"]['Utah']] },
+                { name: 'Vermont', value: selectedData[data["STATE_INDEX"]['Vermont']] },
+                { name: 'Virginia', value: selectedData[data["STATE_INDEX"]['Virginia']] },
+                { name: 'Washington', value: selectedData[data["STATE_INDEX"]['Washington']] },
+                { name: 'West Virginia', value: selectedData[data["STATE_INDEX"]['West Virginia']] },
+                { name: 'Wisconsin', value: selectedData[data["STATE_INDEX"]['Wisconsin']] },
+                { name: 'Wyoming', value: selectedData[data["STATE_INDEX"]['Wyoming']] },
+                { name: 'Puerto Rico', value: selectedData[data["STATE_INDEX"]['Puerto Rico']] }
+              ]
+            }
+          ]
+        };
+        myChart.setOption(option);
+      });
+
+      if (option && typeof option === 'object') {
+        myChart.setOption(option);
+      }
+
+      window.addEventListener('resize', myChart.resize);
+
+    }
+  </script>
+
+</body>
+
+</html>

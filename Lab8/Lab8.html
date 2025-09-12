@@ -169,12 +169,7 @@
     <option value="POPESTIMATE" selected>População total estimada</option>
     <option value="DEATHS">Mortes</option>
     <option value="BIRTHS">Nascimentos</option>
-    <option value="NPOPCHG">Mudança populacional</option>
-    <option value="NATURALCHG">Mudança natural</option>
-    <option value="INTERNATIONALMIG">Migração internacional</option>
     <option value="DOMESTICMIG">Migração doméstica</option>
-    <option value="NETMIG">Migração</option>
-    <option value="RESIDUAL">Residual</option>
   </select>
 
   <select name="year" id="year">
@@ -308,6 +303,8 @@
         "RESIDUAL": "Residual",
       };
 
+      const percentTypes = ["BIRTHS", "DEATHS", "DOMESTICMIG"];
+
       var selectedData = data[dataType + year];
 
       var min = Infinity;
@@ -357,7 +354,7 @@
             transitionDuration: 0.2
           },
           visualMap: {
-            left: 'right',
+            right: 10,
             top: 60,
             min: min,
             max: max,
@@ -378,13 +375,29 @@
             },
             calculable: true,
             formatter: function (value) {
-              return (value / 1e5).toFixed(1);
+              if (percentTypes.includes(dataType)) {
+                // mostra em porcentagem com 2 casas
+                return value.toFixed(2) + '%';
+              } else {
+                // mantém escala de 100.000
+                return (value / 1e5).toFixed(1);
+              }
             },
             itemHeight: 330
           },
           graphic: {
-            type: 'text', right: 45, top: 90, rotation: Math.PI / -2,
-            style: { text: 'Quantidade de pessoas (escala: 1 = 100.000 pessoas)', textAlign: 'center', fill: '#333', font: '12px sans-serif' }
+            type: 'text',
+            right: 0,
+            top: 90,
+            rotation: Math.PI / -2,
+            style: {
+              text: percentTypes.includes(dataType)
+                ? 'Taxa em % da população'
+                : 'Quantidade de pessoas (escala: 1 = 100.000 pessoas)',
+              textAlign: 'center',
+              fill: '#333',
+              font: '12px sans-serif'
+            }
           },
           toolbox: {
             show: true,

@@ -154,11 +154,11 @@
       Projeto de Visualização Interativa de Dados
     </h2>
     <h4 style="text-align: center">
-      <u>Grupo X</u>: Primeiro_Nome_1 Último_Nome_1, Primeiro_Nome_2 Último_Nome_2, Primeiro_Nome_3 Último_Nome_3, …
+      <u>Grupo B</u>: Álex Fidelis, Diego Aleixo, Lucas Dantas, Luiz Xavier
       &nbsp; &nbsp;
     </h4>
     <h2 style="text-align: center">
-      <span><strong>Título da visualização</strong></span>
+      <span><strong>Estimativas da população metropolitana dos EUA</strong></span>
     </h2>
     <p style="text-align: justify; padding: 10px 50px 10px 50px">
       Breve resumo sobre os dados (e as histórias) visualizadas.
@@ -193,10 +193,15 @@
       <b>Dicas para interagir com a visualização</b>:
     </p>
     <ul style="padding: 0px 50px 10px 75px;">
-      <li>Inserir aqui breves instruções para o usuário navegar na visualização e usar o máximo dos recursos de
-        interação disponíveis.</li>
-      <li>...</li>
-      <li>...</li>
+      <li>Navegue pelo mapa dos Estados Unidos arrastando o mouse e aplicando zoom quando necessário para observar mais
+        precisamente as informações.</li>
+      <li>Utilize a caixa de seleção no canto superior esquerdo para selecionar a história a ser contada.</li>
+      <li>Utilize o gráfico de linha no canto inferior para tomar conclusões de tendência temporal, além do slider para
+        aplicar filtros.</li>
+      <li>Passe o mouse sobre o visualMap localizado à esquerda para consultar estados que atendem aos valores
+        observados no visualMap.</li>
+      <li>Clique em um estado para habilitar o detalhamento a nível municipal, e obter acesso a insights mais profundos.
+      </li>
     </ul>
   </div>
 
@@ -316,8 +321,8 @@
         }
       });
 
-      max = arredondarParaCima(max);
-      min = arredondarParaBaixo(min);
+      //max = arredondarParaCima(max);
+      //min = arredondarParaBaixo(min);
 
       myChart.showLoading();
       $.get('USA.json', function (usaJson) {
@@ -341,7 +346,7 @@
         });
         option = {
           title: {
-            text: 'USA ' + typesData[dataType] + ' (' + year + ')',
+            text: 'EUA ' + typesData[dataType] + ' (' + year + ')',
             subtext: 'Data from www.census.gov',
             sublink: 'http://www.census.gov/popest/data/datasets.html',
             left: 'right'
@@ -353,6 +358,7 @@
           },
           visualMap: {
             left: 'right',
+            top: 60,
             min: min,
             max: max,
             inRange: {
@@ -370,8 +376,15 @@
                 '#a50026'
               ]
             },
-            text: ['High', 'Low'],
-            calculable: true
+            calculable: true,
+            formatter: function (value) {
+              return (value / 1e5).toFixed(1);
+            },
+            itemHeight: 330
+          },
+          graphic: {
+            type: 'text', right: 45, top: 90, rotation: Math.PI / -2,
+            style: { text: 'Quantidade de pessoas (escala: 1 = 100.000 pessoas)', textAlign: 'center', fill: '#333', font: '12px sans-serif' }
           },
           toolbox: {
             show: true,

@@ -6,6 +6,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Lab8 - Grupo [LETRA]</title>
+  <script src="./utils/fetch_estados.js" defer></script>
 
   <style>
     body {
@@ -185,6 +186,8 @@
     <option value="2024" selected>2024</option>
   </select>
 
+  <button onclick="updateChart(dataType, year, data, 'usa')">Reset</button>
+
   <div id="container" style="max-width: 100%; height: 470px; padding: 10px 50px 10px 50px">
   </div>
 
@@ -224,6 +227,7 @@
   <script type="text/javascript">
 
     var data;
+    var mapName = "usa";
     const $dataTypeSelect = document.getElementById('dataType');
     const $yearSelect = document.getElementById('year');
     var dataType = $dataTypeSelect.value;
@@ -232,12 +236,12 @@
     $dataTypeSelect.addEventListener('change', function () {
       const newTypeSelected = this.value;
       selType = newTypeSelected;
-      updateChart(newTypeSelected, year, data);
+      updateChart(newTypeSelected, year, data, mapName);
     });
     $yearSelect.addEventListener('change', function () {
       const newYearSelected = this.value;
       selType = newYearSelected;
-      updateChart(dataType, newYearSelected, data);
+      updateChart(dataType, newYearSelected, data, mapName);
     });
 
     const fetchData = async () => {
@@ -261,7 +265,7 @@
       data = await fetchData();
 
       if (data) {
-        updateChart(dataType, year, data);
+        updateChart(dataType, year, data, mapName);
       }
     })();
 
@@ -279,7 +283,7 @@
       return Math.sign(num) * arredondado;
     }
 
-    const updateChart = (dataType, year, data) => {
+    const updateChart = (dataType, year, data, mapName) => {
 
       var dom = document.getElementById('container');
       var myChart = echarts.init(dom, null, {
@@ -320,144 +324,213 @@
       min = arredondarParaBaixo(min);
 
       myChart.showLoading();
-      $.get('USA.json', function (usaJson) {
-        myChart.hideLoading();
-        echarts.registerMap('USA', usaJson, {
-          Alaska: {
-            left: -131,
-            top: 25,
-            width: 15
-          },
-          Hawaii: {
-            left: -110,
-            top: 28,
-            width: 5
-          },
-          'Puerto Rico': {
-            left: -76,
-            top: 26,
-            width: 2
-          }
-        });
-        option = {
-          title: {
-            text: 'USA ' + typesData[dataType] + ' (' + year + ')',
-            subtext: 'Data from www.census.gov',
-            sublink: 'http://www.census.gov/popest/data/datasets.html',
-            left: 'right'
-          },
-          tooltip: {
-            trigger: 'item',
-            showDelay: 0,
-            transitionDuration: 0.2
-          },
-          visualMap: {
-            left: 'right',
-            min: min,
-            max: max,
-            inRange: {
-              color: [
-                '#313695',
-                '#4575b4',
-                '#74add1',
-                '#abd9e9',
-                '#e0f3f8',
-                '#ffffbf',
-                '#fee090',
-                '#fdae61',
-                '#f46d43',
-                '#d73027',
-                '#a50026'
-              ]
-            },
-            text: ['High', 'Low'],
-            calculable: true
-          },
-          toolbox: {
-            show: true,
-            //orient: 'vertical',
-            left: 'left',
-            top: 'top',
-            feature: {
-              dataView: { readOnly: false },
-              restore: {},
-              saveAsImage: {}
-            }
-          },
-          series: [
-            {
-              name: typesData[dataType],
-              type: 'map',
-              roam: true,
-              map: 'USA',
-              emphasis: {
-                label: {
-                  show: true
-                }
-              },
-              data: [
-                { name: 'Alabama', value: selectedData[data["STATE_INDEX"]['Alabama']] },
-                { name: 'Alaska', value: selectedData[data["STATE_INDEX"]['Alaska']] },
-                { name: 'Arizona', value: selectedData[data["STATE_INDEX"]['Arizona']] },
-                { name: 'Arkansas', value: selectedData[data["STATE_INDEX"]['Arkansas']] },
-                { name: 'California', value: selectedData[data["STATE_INDEX"]['California']] },
-                { name: 'Colorado', value: selectedData[data["STATE_INDEX"]['Colorado']] },
-                { name: 'Connecticut', value: selectedData[data["STATE_INDEX"]['Connecticut']] },
-                { name: 'Delaware', value: selectedData[data["STATE_INDEX"]['Delaware']] },
-                { name: 'District of Columbia', value: selectedData[data["STATE_INDEX"]['District of Columbia']] },
-                { name: 'Florida', value: selectedData[data["STATE_INDEX"]['Florida']] },
-                { name: 'Georgia', value: selectedData[data["STATE_INDEX"]['Georgia']] },
-                { name: 'Hawaii', value: selectedData[data["STATE_INDEX"]['Hawaii']] },
-                { name: 'Idaho', value: selectedData[data["STATE_INDEX"]['Idaho']] },
-                { name: 'Illinois', value: selectedData[data["STATE_INDEX"]['Illinois']] },
-                { name: 'Indiana', value: selectedData[data["STATE_INDEX"]['Indiana']] },
-                { name: 'Iowa', value: selectedData[data["STATE_INDEX"]['Iowa']] },
-                { name: 'Kansas', value: selectedData[data["STATE_INDEX"]['Kansas']] },
-                { name: 'Kentucky', value: selectedData[data["STATE_INDEX"]['Kentucky']] },
-                { name: 'Louisiana', value: selectedData[data["STATE_INDEX"]['Louisiana']] },
-                { name: 'Maine', value: selectedData[data["STATE_INDEX"]['Maine']] },
-                { name: 'Maryland', value: selectedData[data["STATE_INDEX"]['Maryland']] },
-                { name: 'Massachusetts', value: selectedData[data["STATE_INDEX"]['Massachusetts']] },
-                { name: 'Michigan', value: selectedData[data["STATE_INDEX"]['Michigan']] },
-                { name: 'Minnesota', value: selectedData[data["STATE_INDEX"]['Minnesota']] },
-                { name: 'Mississippi', value: selectedData[data["STATE_INDEX"]['Mississippi']] },
-                { name: 'Missouri', value: selectedData[data["STATE_INDEX"]['Missouri']] },
-                { name: 'Montana', value: selectedData[data["STATE_INDEX"]['Montana']] },
-                { name: 'Nebraska', value: selectedData[data["STATE_INDEX"]['Nebraska']] },
-                { name: 'Nevada', value: selectedData[data["STATE_INDEX"]['Nevada']] },
-                { name: 'New Hampshire', value: selectedData[data["STATE_INDEX"]['New Hampshire']] },
-                { name: 'New Jersey', value: selectedData[data["STATE_INDEX"]['New Jersey']] },
-                { name: 'New Mexico', value: selectedData[data["STATE_INDEX"]['New Mexico']] },
-                { name: 'New York', value: selectedData[data["STATE_INDEX"]['New York']] },
-                { name: 'North Carolina', value: selectedData[data["STATE_INDEX"]['North Carolina']] },
-                { name: 'North Dakota', value: selectedData[data["STATE_INDEX"]['North Dakota']] },
-                { name: 'Ohio', value: selectedData[data["STATE_INDEX"]['Ohio']] },
-                { name: 'Oklahoma', value: selectedData[data["STATE_INDEX"]['Oklahoma']] },
-                { name: 'Oregon', value: selectedData[data["STATE_INDEX"]['Oregon']] },
-                { name: 'Pennsylvania', value: selectedData[data["STATE_INDEX"]['Pennsylvania']] },
-                { name: 'Rhode Island', value: selectedData[data["STATE_INDEX"]['Rhode Island']] },
-                { name: 'South Carolina', value: selectedData[data["STATE_INDEX"]['South Carolina']] },
-                { name: 'South Dakota', value: selectedData[data["STATE_INDEX"]['South Dakota']] },
-                { name: 'Tennessee', value: selectedData[data["STATE_INDEX"]['Tennessee']] },
-                { name: 'Texas', value: selectedData[data["STATE_INDEX"]['Texas']] },
-                { name: 'Utah', value: selectedData[data["STATE_INDEX"]['Utah']] },
-                { name: 'Vermont', value: selectedData[data["STATE_INDEX"]['Vermont']] },
-                { name: 'Virginia', value: selectedData[data["STATE_INDEX"]['Virginia']] },
-                { name: 'Washington', value: selectedData[data["STATE_INDEX"]['Washington']] },
-                { name: 'West Virginia', value: selectedData[data["STATE_INDEX"]['West Virginia']] },
-                { name: 'Wisconsin', value: selectedData[data["STATE_INDEX"]['Wisconsin']] },
-                { name: 'Wyoming', value: selectedData[data["STATE_INDEX"]['Wyoming']] },
-                { name: 'Puerto Rico', value: selectedData[data["STATE_INDEX"]['Puerto Rico']] }
-              ]
-            }
-          ]
-        };
-        myChart.setOption(option);
-      });
 
-      if (option && typeof option === 'object') {
-        myChart.setOption(option);
+      const promises = [
+        fetch('./USA.json').then(res => res.json())
+      ];
+
+      if (mapName !== 'usa') {
+        // promises.push(fetch(`./maps/${mapName}.json`).then(res => res.json()));
+        promises.push(fetchEstadosJson(mapName).then(res => res));
       }
+
+      Promise.all(promises)
+        .then(function ([usaJson, StateJson]) {
+          // Este bloco só executa quando AMBOS os arquivos foram carregados com sucesso
+          myChart.hideLoading();
+
+          console.log(usaJson, StateJson);
+          var areaColor = '#a50026';
+          var color = '';
+
+          if (mapName !== 'usa') {
+            const stateFeatureArray = usaJson.features.filter(feature => feature.properties.name === mapName);
+            // console.log(usaJson, stateFeatureArray);
+            const singleStateJson = {
+              type: 'FeatureCollection',
+              features: stateFeatureArray
+            };
+
+            usaJson = singleStateJson;
+
+            areaColor = '#fff0';
+            color = '#fff0';
+
+            echarts.registerMap(mapName, StateJson);
+          }
+
+          // Agora é seguro registrar os dois mapas
+          echarts.registerMap('USA', usaJson, {
+            Alaska: {
+              left: -131,
+              top: 25,
+              width: 15
+            },
+            Hawaii: {
+              left: -110,
+              top: 28,
+              width: 5
+            },
+            'Puerto Rico': {
+              left: -76,
+              top: 26,
+              width: 2
+            }
+          });
+
+          // Suas configurações de opção permanecem as mesmas
+          var option = {
+            title: {
+              text: 'USA ' + typesData[dataType] + ' (' + year + ')',
+              subtext: 'Data from www.census.gov',
+              sublink: 'http://www.census.gov/popest/data/datasets.html',
+              left: 'right'
+            },
+            tooltip: {
+              trigger: 'item',
+              showDelay: 0,
+              transitionDuration: 0.2
+            },
+            visualMap: {
+              left: 'right',
+              min: min,
+              max: max,
+              inRange: {
+                color: [
+                  '#313695', '#4575b4', '#74add1', '#abd9e9', '#e0f3f8', '#ffffbf',
+                  '#fee090', '#fdae61', '#f46d43', '#d73027', '#a50026'
+                ]
+              },
+              text: ['High', 'Low'],
+              calculable: true
+            },
+            toolbox: {
+              show: true,
+              left: 'left',
+              top: 'top',
+              feature: {
+                dataView: { readOnly: false },
+                restore: {},
+                saveAsImage: {}
+              }
+            },
+            z: 1,
+            series: [
+              {
+                name: typesData[dataType],
+                type: 'map',
+                roam: true,
+                map: 'USA',
+                itemStyle: {
+                  borderColor: '#fff'
+                },
+                select: {
+                  itemStyle: {
+                    areaColor: '#bce1ee',
+                    borderColor: '#939394'
+                  },
+                },
+                emphasis: {
+                  label: { show: true },
+                  itemStyle: {
+                    areaColor: areaColor,
+                    borderColor: '#fff',
+                    borderWidth: 2
+                  }
+                },
+                data: [
+                  { name: 'Alabama', value: selectedData[data["STATE_INDEX"]['Alabama']] },
+                  { name: 'Alaska', value: selectedData[data["STATE_INDEX"]['Alaska']] },
+                  { name: 'Arizona', value: selectedData[data["STATE_INDEX"]['Arizona']] },
+                  { name: 'Arkansas', value: selectedData[data["STATE_INDEX"]['Arkansas']] },
+                  { name: 'California', value: selectedData[data["STATE_INDEX"]['California']] },
+                  { name: 'Colorado', value: selectedData[data["STATE_INDEX"]['Colorado']] },
+                  { name: 'Connecticut', value: selectedData[data["STATE_INDEX"]['Connecticut']] },
+                  { name: 'Delaware', value: selectedData[data["STATE_INDEX"]['Delaware']] },
+                  { name: 'District of Columbia', value: selectedData[data["STATE_INDEX"]['District of Columbia']] },
+                  { name: 'Florida', value: selectedData[data["STATE_INDEX"]['Florida']] },
+                  { name: 'Georgia', value: selectedData[data["STATE_INDEX"]['Georgia']] },
+                  { name: 'Hawaii', value: selectedData[data["STATE_INDEX"]['Hawaii']] },
+                  { name: 'Idaho', value: selectedData[data["STATE_INDEX"]['Idaho']] },
+                  { name: 'Illinois', value: selectedData[data["STATE_INDEX"]['Illinois']] },
+                  { name: 'Indiana', value: selectedData[data["STATE_INDEX"]['Indiana']] },
+                  { name: 'Iowa', value: selectedData[data["STATE_INDEX"]['Iowa']] },
+                  { name: 'Kansas', value: selectedData[data["STATE_INDEX"]['Kansas']] },
+                  { name: 'Kentucky', value: selectedData[data["STATE_INDEX"]['Kentucky']] },
+                  { name: 'Louisiana', value: selectedData[data["STATE_INDEX"]['Louisiana']] },
+                  { name: 'Maine', value: selectedData[data["STATE_INDEX"]['Maine']] },
+                  { name: 'Maryland', value: selectedData[data["STATE_INDEX"]['Maryland']] },
+                  { name: 'Massachusetts', value: selectedData[data["STATE_INDEX"]['Massachusetts']] },
+                  { name: 'Michigan', value: selectedData[data["STATE_INDEX"]['Michigan']] },
+                  { name: 'Minnesota', value: selectedData[data["STATE_INDEX"]['Minnesota']] },
+                  { name: 'Mississippi', value: selectedData[data["STATE_INDEX"]['Mississippi']] },
+                  { name: 'Missouri', value: selectedData[data["STATE_INDEX"]['Missouri']] },
+                  { name: 'Montana', value: selectedData[data["STATE_INDEX"]['Montana']] },
+                  { name: 'Nebraska', value: selectedData[data["STATE_INDEX"]['Nebraska']] },
+                  { name: 'Nevada', value: selectedData[data["STATE_INDEX"]['Nevada']] },
+                  { name: 'New Hampshire', value: selectedData[data["STATE_INDEX"]['New Hampshire']] },
+                  { name: 'New Jersey', value: selectedData[data["STATE_INDEX"]['New Jersey']] },
+                  { name: 'New Mexico', value: selectedData[data["STATE_INDEX"]['New Mexico']] },
+                  { name: 'New York', value: selectedData[data["STATE_INDEX"]['New York']] },
+                  { name: 'North Carolina', value: selectedData[data["STATE_INDEX"]['North Carolina']] },
+                  { name: 'North Dakota', value: selectedData[data["STATE_INDEX"]['North Dakota']] },
+                  { name: 'Ohio', value: selectedData[data["STATE_INDEX"]['Ohio']] },
+                  { name: 'Oklahoma', value: selectedData[data["STATE_INDEX"]['Oklahoma']] },
+                  { name: 'Oregon', value: selectedData[data["STATE_INDEX"]['Oregon']] },
+                  { name: 'Pennsylvania', value: selectedData[data["STATE_INDEX"]['Pennsylvania']] },
+                  { name: 'Rhode Island', value: selectedData[data["STATE_INDEX"]['Rhode Island']] },
+                  { name: 'South Carolina', value: selectedData[data["STATE_INDEX"]['South Carolina']] },
+                  { name: 'South Dakota', value: selectedData[data["STATE_INDEX"]['South Dakota']] },
+                  { name: 'Tennessee', value: selectedData[data["STATE_INDEX"]['Tennessee']] },
+                  { name: 'Texas', value: selectedData[data["STATE_INDEX"]['Texas']] },
+                  { name: 'Utah', value: selectedData[data["STATE_INDEX"]['Utah']] },
+                  { name: 'Vermont', value: selectedData[data["STATE_INDEX"]['Vermont']] },
+                  { name: 'Virginia', value: selectedData[data["STATE_INDEX"]['Virginia']] },
+                  { name: 'Washington', value: selectedData[data["STATE_INDEX"]['Washington']] },
+                  { name: 'West Virginia', value: selectedData[data["STATE_INDEX"]['West Virginia']] },
+                  { name: 'Wisconsin', value: selectedData[data["STATE_INDEX"]['Wisconsin']] },
+                  { name: 'Wyoming', value: selectedData[data["STATE_INDEX"]['Wyoming']] },
+                  { name: 'Puerto Rico', value: selectedData[data["STATE_INDEX"]['Puerto Rico']] }
+                ]
+
+              },
+            ]
+          };
+
+          if (mapName !== 'usa') {
+            option.series.push(
+              {
+                name: mapName,
+                nameProperty: 'NAME',
+                type: 'map',
+                map: mapName,
+                geoIndex: 0,
+                roam: true,
+                z: 100,
+                data: [{ name: 'Houston', value: 0 }],
+                itemStyle: {
+                  areaColor: '#f00',
+                  borderColor: '',
+                  borderWidth: 0
+                },
+                emphasis: {
+                  itemStyle: { areaColor: '#f00' }
+                }
+              })
+          }
+
+          myChart.setOption(option);
+
+          myChart.on('click', function (params) {
+            mapName = params.name;
+            updateChart(dataType, year, data, params.name);
+          });
+
+        })
+        .catch(function (error) {
+          myChart.hideLoading();
+          console.error("Falha ao carregar os dados do mapa:", error);
+        });
 
       window.addEventListener('resize', myChart.resize);
 

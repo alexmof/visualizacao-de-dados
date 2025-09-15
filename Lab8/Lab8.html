@@ -237,12 +237,12 @@
 
     $dataTypeSelect.addEventListener('change', function () {
       const newTypeSelected = this.value;
-      selType = newTypeSelected;
+      dataType = newTypeSelected;
       updateChart(newTypeSelected, year, data, mapName);
     });
     $yearSelect.addEventListener('change', function () {
       const newYearSelected = this.value;
-      selType = newYearSelected;
+      year = newYearSelected;
       updateChart(dataType, newYearSelected, data, mapName);
     });
 

@@ -357,7 +357,7 @@
         .then(function ([usaJson, StateJson]) {
           myChart.hideLoading();
 
-          var areaColor = '#a50026';
+          var areaColor = 'transparent';
           var color = '';
 
           if (mapName !== 'usa') {
@@ -532,7 +532,7 @@
                   borderWidth: 0
                 },
                 emphasis: {
-                  itemStyle: { areaColor: '#f00' }
+                  itemStyle: { areaColor: 'transparent' }
                 }
               })
           }

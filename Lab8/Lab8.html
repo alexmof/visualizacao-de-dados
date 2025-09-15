@@ -197,7 +197,7 @@
           <td style="text-align: right; vertical-align: top">
             <div>Disciplina: Visualização de Dados</div>
             <div>Professor: Maxwell Guimarães de Oliveira</div>
-            <div>Período: 20XX.X</div>
+            <div>Período: 2025.1</div>
           </td>
         </tr>
       </tbody>
@@ -209,14 +209,17 @@
       Projeto de Visualização Interativa de Dados
     </h2>
     <h4 style="text-align: center">
-      <u>Grupo X</u>: Primeiro_Nome_1 Último_Nome_1, Primeiro_Nome_2 Último_Nome_2, Primeiro_Nome_3 Último_Nome_3, …
+      <u>Grupo B</u>: Álex Fidelis, Lucas Khalil, Diego Aleixo, Luiz Abrantes
       &nbsp; &nbsp;
     </h4>
     <h2 style="text-align: center">
-      <span><strong>Título da visualização</strong></span>
+      <span><strong>Estimativas da população metropolitana dos EUA</strong></span>
     </h2>
     <p style="text-align: justify; padding: 10px 50px 10px 50px">
-      Breve resumo sobre os dados (e as histórias) visualizadas.
+      Data set sobre "Estimativas da População Residente Anual e Componentes Estimados da
+Variação da População Residente para Áreas Estatísticas Metropolitanas e Micropolitanas e seus Componentes Geográficos
+para os Estados " <br>
+      Este mapa interativo é mais do que um simples contador de pessoas; é um raio-X demográfico dos Estados Unidos, construído a partir de dados detalhados do U.S. Census Bureau. Ele nos permite não apenas ver quantas pessoas vivem em cada condado ou região metropolitana, mas também entender o porquê dessas populações estarem mudando ao longo do tempo e os impactos pós pandemia.
     </p>
   </div>
 
@@ -239,12 +242,8 @@
     <option value="POPESTIMATE" selected>População total estimada</option>
     <option value="DEATHS">Mortes</option>
     <option value="BIRTHS">Nascimentos</option>
-    <option value="NPOPCHG">Mudança populacional</option>
-    <option value="NATURALCHG">Mudança natural</option>
     <option value="INTERNATIONALMIG">Migração internacional</option>
     <option value="DOMESTICMIG">Migração doméstica</option>
-    <option value="NETMIG">Migração</option>
-    <option value="RESIDUAL">Residual</option>
   </select>
 
   <select name="year" id="year">
@@ -265,10 +264,15 @@
       <b>Dicas para interagir com a visualização</b>:
     </p>
     <ul style="padding: 0px 50px 10px 75px;">
-      <li>Inserir aqui breves instruções para o usuário navegar na visualização e usar o máximo dos recursos de
-        interação disponíveis.</li>
-      <li>...</li>
-      <li>...</li>
+      <li>Navegue pelo mapa dos Estados Unidos arrastando o mouse e aplicando zoom quando necessário para observar mais
+        precisamente as informações.</li>
+      <li>Utilize a caixa de seleção no canto superior esquerdo para selecionar a história a ser contada.</li>
+      <li>Utilize o gráfico de linha no canto inferior para tomar conclusões de tendência temporal, além do slider para
+        aplicar filtros.</li>
+      <li>Passe o mouse sobre o visualMap localizado à esquerda para consultar estados que atendem aos valores
+        observados no visualMap.</li>
+      <li>Clique em um estado para habilitar o detalhamento a nível municipal, e obter acesso a insights mais profundos.
+      </li>
     </ul>
   </div>
 

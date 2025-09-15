@@ -7,6 +7,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Lab8 - Grupo [LETRA]</title>
   <script src="./utils/fetch_estados.js" defer></script>
+  <script src=".\utils\get_dados_state.js"></script>
 
   <style>
     body {
@@ -227,6 +228,7 @@
   <script type="text/javascript">
 
     var data;
+    var cities_data_per_state;
     var mapName = "usa";
     const $dataTypeSelect = document.getElementById('dataType');
     const $yearSelect = document.getElementById('year');
@@ -244,9 +246,9 @@
       updateChart(dataType, newYearSelected, data, mapName);
     });
 
-    const fetchData = async () => {
+    async function fetchData(jsonPath) {
       try {
-        const response = await fetch('./df_estado.json');
+        const response = await fetch(jsonPath);
 
         if (!response.ok) {
           throw new Error('Erro ao carregar dados: ' + response.statusText);
@@ -262,7 +264,7 @@
     };
 
     (async () => {
-      data = await fetchData();
+      data = await fetchData('./df_estado.json');
 
       if (data) {
         updateChart(dataType, year, data, mapName);
@@ -330,22 +332,36 @@
       ];
 
       if (mapName !== 'usa') {
-        // promises.push(fetch(`./maps/${mapName}.json`).then(res => res.json()));
         promises.push(fetchEstadosJson(mapName).then(res => res));
+
+        (async () => {
+          const cities_data = await fetchData('./complete_df.json');
+          cities_data_per_state = get_dados_state(mapName, cities_data, dataType, year);
+          console.log(cities_data_per_state);
+          max = -Infinity;
+          min = Infinity;
+          var namem = '';
+          Object.keys(cities_data_per_state).forEach(element => {
+            if (cities_data_per_state[element].value > max) {
+              max = cities_data_per_state[element].value;
+              namem = cities_data_per_state[element].name;
+            } else if (cities_data_per_state[element].value < min) {
+              min = cities_data_per_state[element].value;
+            }
+          });
+          console.log(min, max, namem)
+        })();
       }
 
       Promise.all(promises)
         .then(function ([usaJson, StateJson]) {
-          // Este bloco só executa quando AMBOS os arquivos foram carregados com sucesso
           myChart.hideLoading();
 
-          console.log(usaJson, StateJson);
           var areaColor = '#a50026';
           var color = '';
 
           if (mapName !== 'usa') {
             const stateFeatureArray = usaJson.features.filter(feature => feature.properties.name === mapName);
-            // console.log(usaJson, stateFeatureArray);
             const singleStateJson = {
               type: 'FeatureCollection',
               features: stateFeatureArray
@@ -359,7 +375,6 @@
             echarts.registerMap(mapName, StateJson);
           }
 
-          // Agora é seguro registrar os dois mapas
           echarts.registerMap('USA', usaJson, {
             Alaska: {
               left: -131,
@@ -378,7 +393,6 @@
             }
           });
 
-          // Suas configurações de opção permanecem as mesmas
           var option = {
             title: {
               text: 'USA ' + typesData[dataType] + ' (' + year + ')',
@@ -414,27 +428,30 @@
                 saveAsImage: {}
               }
             },
-            z: 1,
+            geo: [],
             series: [
               {
+                id: "usaMap",
                 name: typesData[dataType],
                 type: 'map',
                 roam: true,
                 map: 'USA',
+                geoIndex: 0,
+                z: 2,
                 itemStyle: {
                   borderColor: '#fff'
                 },
                 select: {
                   itemStyle: {
-                    areaColor: '#bce1ee',
-                    borderColor: '#939394'
+                    areaColor: '#fff',
+                    borderColor: '#868686'
                   },
                 },
                 emphasis: {
                   label: { show: true },
                   itemStyle: {
                     areaColor: areaColor,
-                    borderColor: '#fff',
+                    borderColor: '#868686',
                     borderWidth: 2
                   }
                 },
@@ -500,16 +517,17 @@
           if (mapName !== 'usa') {
             option.series.push(
               {
+                id: mapName + 'Map',
                 name: mapName,
                 nameProperty: 'NAME',
                 type: 'map',
                 map: mapName,
-                geoIndex: 0,
+                geoIndex: 1,
                 roam: true,
-                z: 100,
-                data: [{ name: 'Houston', value: 0 }],
+                z: 3,
+                data: cities_data_per_state,
                 itemStyle: {
-                  areaColor: '#f00',
+                  areaColor: '#d9d9d9',
                   borderColor: '',
                   borderWidth: 0
                 },
@@ -526,6 +544,25 @@
             updateChart(dataType, year, data, params.name);
           });
 
+          myChart.on("georoam", function (params) {
+            if (params.componentType === "series") {
+              const option = myChart.getOption();
+              const source = option.series.find(s => s.id === params.seriesId);
+              if (!source) return;
+
+              const zoom = source.zoom;
+              const center = source.center;
+
+              option.series.forEach(s => {
+                if (s.id !== params.seriesId) {
+                  s.zoom = zoom;
+                  s.center = center;
+                }
+              });
+
+              myChart.setOption(option, false);
+            }
+          });
         })
         .catch(function (error) {
           myChart.hideLoading();

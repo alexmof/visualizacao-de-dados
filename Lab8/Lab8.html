@@ -109,8 +109,61 @@
       padding: 20px 50px;
       background-color: #a4dceb;
     }
+
+    /* CSS do Modal */
+    .modal-overlay {
+      display: none;
+      /* Começa escondido */
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.6);
+      z-index: 200;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .modal-content {
+      background-color: #fff;
+      padding: 20px 30px;
+      border-radius: 8px;
+      text-align: center;
+      max-width: 400px;
+    }
+
+    .modal-content button {
+      margin-top: 15px;
+      padding: 10px 20px;
+      cursor: pointer;
+    }
   </style>
+
 </head>
+
+<script>
+  window.addEventListener('load', () => {
+    if (!sessionStorage.getItem('infoPopupShown')) {
+      const modal = document.getElementById('info-modal');
+      const closeModalBtn = document.getElementById('close-modal-btn');
+
+      modal.style.display = 'flex'; // Mostra o modal
+
+      function closeModal() {
+        modal.style.display = 'none';
+        sessionStorage.setItem('infoPopupShown', 'true');
+      }
+
+      closeModalBtn.addEventListener('click', closeModal);
+      modal.addEventListener('click', (event) => {
+        if (event.target === modal) { // Fecha se clicar fora do conteúdo
+          closeModal();
+        }
+      });
+    }
+  });
+</script>
 
 <body>
   <div class="header-info">
@@ -165,6 +218,21 @@
     <p style="text-align: justify; padding: 10px 50px 10px 50px">
       Breve resumo sobre os dados (e as histórias) visualizadas.
     </p>
+  </div>
+
+  <div id="info-modal" class="modal-overlay">
+    <div class="modal-content">
+      <h2>Mapa Interativo</h2>
+      <div>
+        <p>Passe o mouse sobre o estado para ter informações quantitativas.</p>
+        <img src="./assets/tooltip.svg" alt="">
+      </div>
+      <div>
+        <p>Clique em qualquer estado no mapa para ver informações detalhadas.</p>
+        <img src="./assets/click.svg" alt="">
+      </div>
+      <button id="close-modal-btn">Entendi</button>
+    </div>
   </div>
 
   <select id="dataType" name="dataType">

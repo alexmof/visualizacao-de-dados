@@ -285,7 +285,7 @@
       return Math.sign(num) * arredondado;
     }
 
-    const updateChart = (dataType, year, data, mapName) => {
+    const updateChart = (dataType, year, data, mapNameUp) => {
 
       var dom = document.getElementById('container');
       var myChart = echarts.init(dom, null, {
@@ -331,12 +331,12 @@
         fetch('./USA.json').then(res => res.json())
       ];
 
-      if (mapName !== 'usa') {
-        promises.push(fetchEstadosJson(mapName).then(res => res));
+      if (mapNameUp !== 'usa') {
+        promises.push(fetchEstadosJson(mapNameUp).then(res => res));
 
         (async () => {
           const cities_data = await fetchData('./complete_df.json');
-          cities_data_per_state = get_dados_state(mapName, cities_data, dataType, year);
+          cities_data_per_state = get_dados_state(mapNameUp, cities_data, dataType, year);
           console.log(cities_data_per_state);
           max = -Infinity;
           min = Infinity;
@@ -360,8 +360,8 @@
           var areaColor = 'transparent';
           var color = '';
 
-          if (mapName !== 'usa') {
-            const stateFeatureArray = usaJson.features.filter(feature => feature.properties.name === mapName);
+          if (mapNameUp !== 'usa') {
+            const stateFeatureArray = usaJson.features.filter(feature => feature.properties.name === mapNameUp);
             const singleStateJson = {
               type: 'FeatureCollection',
               features: stateFeatureArray
@@ -372,10 +372,10 @@
             areaColor = '#fff0';
             color = '#fff0';
 
-            echarts.registerMap(mapName, StateJson);
+            echarts.registerMap(mapNameUp, StateJson);
           }
 
-          echarts.registerMap('USA', usaJson, {
+          echarts.registerMap('USA/state', usaJson, {
             Alaska: {
               left: -131,
               top: 25,
@@ -435,7 +435,7 @@
                 name: typesData[dataType],
                 type: 'map',
                 roam: true,
-                map: 'USA',
+                map: 'USA/state',
                 geoIndex: 0,
                 z: 2,
                 itemStyle: {
@@ -514,14 +514,14 @@
             ]
           };
 
-          if (mapName !== 'usa') {
+          if (mapNameUp !== 'usa') {
             option.series.push(
               {
-                id: mapName + 'Map',
-                name: mapName,
+                id: mapNameUp + 'Map',
+                name: mapNameUp,
                 nameProperty: 'NAME',
                 type: 'map',
-                map: mapName,
+                map: mapNameUp,
                 geoIndex: 1,
                 roam: true,
                 z: 3,
